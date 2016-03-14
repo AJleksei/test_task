@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ceasar_cipher',
+    'caesar_cipher',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -56,7 +56,7 @@ ROOT_URLCONF = 'test_task.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['caesar_cipher/templates/ceasar_cipher'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

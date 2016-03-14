@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block title %}Шифр Цезаря{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <form action="index" method="post">
+                {% csrf_token %}
+                <div class="col-lg-5 col-md-5 col-sm-5">
+                    <textarea name="text" class="form-control" rows="15" style="resize: none"></textarea>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 form-group">
+                    <label for="shift">ROT</label>
+                    <input type="text" class="form-control" id="'shift" name="shift">
+                    <button type="submit" name="encode" class="btn btn-default">Кодировать</button>
+                    <button type="submit" name="decode" class="btn btn-default">Декодировать</button>
+                </div>
+                <div class="col-lg-5 col-md-5 col-sm-5">
+                    <textarea class="form-control" rows="15" style="resize: none">{{ res|default:'' }}</textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+{% endblock %}

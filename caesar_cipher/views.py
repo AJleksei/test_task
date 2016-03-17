@@ -143,6 +143,8 @@ def index(request):
 def automatic_encode_decode_caesar(text, rot, action):
     letters_count = {chr(x): 0 for x in range(ord(start_english_symbol), ord(end_english_symbol) + 1)}
     len_letters = len(letters)
+    if action == decode:
+        rot *= -1
 
     result_text = ''
     # В цикле проходим по всем символам
@@ -153,8 +155,6 @@ def automatic_encode_decode_caesar(text, rot, action):
         # Если символ есть в словаре шифруемых символов
         if symbol in letters:
             # Шифруем/дешифруем символ
-            if action == decode:
-                rot *= -1
             symbol_index = ((letters.index(symbol) + rot) % len_letters)
             symbol_result = letters[symbol_index].upper() if is_upper else letters[symbol_index]
             result_text += symbol_result

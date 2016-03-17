@@ -16,7 +16,6 @@
                         <div class="input-group-addon">ROT</div>
                         <input type="text" class="form-control" id="rot" name="rot">
                     </div>
-                    <button type="button" onclick="sendData()">JSON</button>
                     <button type="button" ng-click="load($event)" id="encode" name="encode" class="btn btn-default">Кодировать</button>
                     <button type="button" ng-click="load($event)" id="decode" name="decode" class="btn btn-default">Декодировать</button>
                 </div>
@@ -38,8 +37,8 @@
     var myApp = angular.module('myApp', []);
     myApp.controller('CeasarController',
         function ($scope, $http){
-            $scope.text = '';
-            $scope.letters_count = '';
+            $scope.text = null;
+            $scope.letters_count = null;
             $scope.ceasar_key = null;
 
 

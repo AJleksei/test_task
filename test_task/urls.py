@@ -19,7 +19,9 @@ from caesar_cipher import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    #url(r'^', include('caesar_cipher.urls')),
+    url(r'^test/$', views.test, name='test'),
     url(r'^', views.index, name='index'),
     url(r'^index/', views.index, name='index'),
+
+
 ]

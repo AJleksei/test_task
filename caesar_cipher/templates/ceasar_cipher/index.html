@@ -3,26 +3,138 @@
 {% block title %}Шифр Цезаря{% endblock %}
 
 {% block content %}
-    <div class="row">
+    <div class="row" ng-controller="CeasarController" onsubmit="return false;">
         <div class="col-lg-12 col-md-12">
             <form action="index" method="post">
                 {% csrf_token %}
                 <div class="col-lg-5 col-md-5 col-sm-5">
-                    <textarea name="text" class="form-control" rows="15" style="resize: none"></textarea>
+                    <textarea name="original_text" id="original_text" class="form-control" rows="15" style="resize: none"></textarea>
                 </div>
-                <div class="col-lg-2 col-md-2 col-sm-2 form-group">
-                    <label for="shift">ROT</label>
-                    <input type="text" class="form-control" id="'shift" name="shift">
-                    <button type="submit" name="encode" class="btn btn-default">Кодировать</button>
-                    <button type="submit" name="decode" class="btn btn-default">Декодировать</button>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    {# <label for="shift">ROT</label> #}
+                    <div class="input-group">
+                        <div class="input-group-addon">ROT</div>
+                        <input type="text" class="form-control" id="rot" name="rot">
+                    </div>
+                    <button type="button" onclick="sendData()">JSON</button>
+                    <button type="button" ng-click="load($event)" id="encode" name="encode" class="btn btn-default">Кодировать</button>
+                    <button type="button" ng-click="load($event)" id="decode" name="decode" class="btn btn-default">Декодировать</button>
                 </div>
                 <div class="col-lg-5 col-md-5 col-sm-5">
-                    <textarea class="form-control" rows="15" style="resize: none">{{ res|default:'' }}</textarea>
+                    {% verbatim %}
+                    <textarea name="modified_text" id="modified_text" class="form-control" rows="15" style="resize: none">{{ text }}</textarea>
+                    {% endverbatim %}
                 </div>
+                {% verbatim %}
+                <p>{{ ceasar_key }}</p>
+                {% endverbatim %}
             </form>
         </div>
     </div>
 
 
+    <script type="text/javascript">
+
+    var myApp = angular.module('myApp', []);
+    myApp.controller('CeasarController',
+        function ($scope, $http){
+            $scope.text = '';
+            $scope.letters_count = '';
+            $scope.ceasar_key = null;
+
+
+             $scope.load = function ($event){
+                original_text = $('#original_text').val();
+                rot = $('#rot').val();
+                action = $event.currentTarget.name;
+
+                $http({
+                    url: 'test/',
+                    method: "POST",
+                    data: {
+                        text: original_text,
+                        rot: rot,
+                        action: action
+                    },
+                    headers: { "X-CSRFToken": getCookie("csrftoken") }
+                }).then(function successCallback(response) {
+                    this.text = 'Получилось';
+                    $scope.text = response.data.text;
+                    $scope.ceasar_key = response.data.ceasar_key;
+                }, function errorCallback(response) {
+                     alert('Ошибка!');
+                });
+            };
+        }
+    );
+
+    /*
+    $('#encode, #decode').click(function(){
+        original_text = $('#original_text').val();
+        rot = $('#rot').val();
+        action = this.name;
+        $.ajax({
+            url:{% url 'test' %},
+            type: "POST",
+            data: {
+                text: original_text,
+                rot: rot,
+                action: action
+            },
+            success: function(data){
+                alert (data);
+            },
+            error: function (xhr, textStatus, thrownError){
+                alert("error doing something");
+            }
+        });
+    });
+    */
+
+
+
+
+    function sendData() {
+        $.ajaxSetup({
+            headers: { "X-CSRFToken": getCookie("csrftoken") }
+        });
+        $.ajax({
+            url:{% url 'test' %},
+            type: "GET",
+            data: {
+                text: "a",
+                rot: "1",
+                action: "encode"
+            },
+            success: function(data, textStatus){
+
+                alert ('Получилось');
+                alert (textStatus);
+                alert (data);
+            },
+            complete: function(){},
+            error: function (xhr, textStatus, thrownError){
+                alert("error doing something");
+            }
+        });
+    }
+
+    function getCookie(c_name)
+    {
+        if (document.cookie.length > 0)
+        {
+            c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1)
+            {
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if (c_end == -1) c_end = document.cookie.length;
+                return unescape(document.cookie.substring(c_start,c_end));
+            }
+        }
+        return "";
+     }
+
+    </script>
 
 {% endblock %}

@@ -1,70 +1,67 @@
 # -*- coding:utf-8 -*-
 from decimal import Decimal
 
-from django.http.response import JsonResponse, HttpResponse
+from django.http.response import JsonResponse, HttpResponse, \
+    HttpResponseBadRequest
 from django.shortcuts import render
 import json
 
 
 encode = u'encode'
 decode = u'decode'
-#start_lower_symbol = u'a'
-#end_lower_symbol = u'z'
 start_english_symbol = u'a'
 end_english_symbol = u'z'
-#start_upper_symbol = u'A'
-#end_upper_symbol = u'Z'
 
 
 from django.views.decorators.csrf import csrf_exempt
-
+# Словарь с символами которые разрешено шифровать/дешифровать
 letters = [chr(x) for x in range(ord(start_english_symbol), ord(end_english_symbol) + 1)]
-
 
 
 def test(request):
     data = {}
     errors = {}
-    #if request.is_ajax():
-    #if request.POST:
-    data_json = json.loads(request.body)
-    text = data_json.get('text', None)
-    rot_str = data_json.get('rot', None)
-    rot = None
-    action = data_json.get('action', None)
+    if request.is_ajax():
+        data_json = json.loads(request.body)
+        text = data_json.get('text', None)
+        rot_str = data_json.get('rot', None)
+        rot = None
+        action = data_json.get('action', None)
 
-    if not rot_str:
-        errors['rot'] = u'ROT не заполнено'
-    if rot_str:
-        try:
-            rot = int(rot_str)
-        except TypeError:
-            errors['rot'] = u'ROT должен быть числом'
+        if not rot_str:
+            errors['rot'] = u'ROT не заполнено'
+        if rot_str:
+            try:
+                rot = int(rot_str)
+            except ValueError:
+                errors['rot'] = u'ROT должен быть числом'
 
-    if not text:
-        errors['text'] = u'Введите текст'
+        if not text:
+            errors['text'] = u'Введите текст'
 
-    if not action:
-        errors['action'] = u'Выберите действие'
+        if not action:
+            errors['action'] = u'Выберите действие'
 
-    if errors:
-        payload = {'success': False, 'message': 'Error!!!!!', 'data': None }
-        data_json = {'success': False, 'response': errors, 'result': 'error', 'status': '503'}
+        if errors:
+            payload = {'success': False, 'message': 'Error!!!!!', 'data': None }
+            data_json = {'success': False, 'response': errors, 'result': 'error', 'status': '503'}
+            return HttpResponseBadRequest()
+            #return HttpResponse(json.dumps(data), content_type='application/json')
+
+        if action == decode:
+            data['text'], data['letters_count'] = decode_caesar(text, rot)
+            data['guess_rot'] = find_cesar_key(text)
+        if action == encode:
+            data['text'], data['letters_count'] = encode_caesar(text, rot)
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    else:
         return HttpResponse(status=400, content_type='application/json')
-
-    if action == decode:
-        data['text'], data['letters_count'] = decode_caesar(text, rot)
-        data['ceasar_key'] = find_cesar_key(text)
-    if action == encode:
-        data['text'], data['letters_count'] = encode_caesar(text, rot)
-
-    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def find_cesar_key(text):
     # Длинна шифрованного текста
     text_len = len(text)
-    # Относительная частота букв в английском языке
+    # Относительная частота букв в тексте, в английском языке
     letters_english = {
         'a': 8.17,
         'b': 1.49,
@@ -97,7 +94,7 @@ def find_cesar_key(text):
     # Сумма абсолютных разностей частот букв в английском алфавите и в тексте
     # (различие между значениями переменных)
     min_delta = 0
-    ceasar_key = 0
+    caesar_key = 0
     for i in range(0, 26):
         letter_count = frequency_letters(text, i)
         delta = 0
@@ -108,15 +105,16 @@ def find_cesar_key(text):
             delta += abs(quantity_text - quantity_english)
         if delta < min_delta or i == 0:
             min_delta = delta
-            ceasar_key = i
+            caesar_key = i
         # Удалить
         print '{} = {}'.format(i, delta)
 
-    return ceasar_key
+    return caesar_key
 
 
 def index(request):
     args = {}
+    """
     if request.is_ajax():
         if request.POST:
             return test(request)
@@ -129,22 +127,20 @@ def index(request):
         res = ''
         letters_count = {}
         if encode in request.POST:
-            res, letters_count = automatic_encode_decode_caesar(original_text, rot, action)
+            res, letters_count = automatic_encode_decode_caesar(original_text, rot)
         if decode in request.POST:
-            res, letters_count = automatic_encode_decode_caesar(original_text, rot, action)
+            res, letters_count = automatic_encode_decode_caesar(original_text, rot)
         args['res'] = res
         import json
         json_res = json.dumps({'text': res, 'letters_count': letters_count})
         args['json_res'] = json_res
-
+    """
     return render(request, 'index.html', args)
 
 
-def automatic_encode_decode_caesar(text, rot, action):
+def automatic_encode_decode_caesar(text, rot):
     letters_count = {chr(x): 0 for x in range(ord(start_english_symbol), ord(end_english_symbol) + 1)}
     len_letters = len(letters)
-    if action == decode:
-        rot *= -1
 
     result_text = ''
     # В цикле проходим по всем символам
@@ -184,11 +180,12 @@ def frequency_letters(text, rot):
 
 
 def decode_caesar(encode_text, rot):
-    return automatic_encode_decode_caesar(encode_text, rot, decode)
+    rot *= -1
+    return automatic_encode_decode_caesar(encode_text, rot)
 
 
 def encode_caesar(decode_text, rot):
-    return automatic_encode_decode_caesar(decode_text, rot, encode)
+    return automatic_encode_decode_caesar(decode_text, rot)
 
 
 

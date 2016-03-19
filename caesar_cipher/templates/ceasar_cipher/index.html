@@ -3,137 +3,75 @@
 {% block title %}Шифр Цезаря{% endblock %}
 
 {% block content %}
-    <div class="row" ng-controller="CeasarController" onsubmit="return false;">
-        <div class="col-lg-12 col-md-12">
-            <form action="index" method="post">
-                {% csrf_token %}
-                <div class="col-lg-5 col-md-5 col-sm-5">
-                    <textarea name="original_text" id="original_text" class="form-control" rows="15" style="resize: none"></textarea>
-                </div>
-                <div class="col-lg-2 col-md-2 col-sm-2">
-                    {# <label for="shift">ROT</label> #}
-                    <div class="input-group">
-                        <div class="input-group-addon">ROT</div>
-                        <input type="text" class="form-control" id="rot" name="rot">
+    <div class="container" ng-controller="CaesarController">
+
+        <div style="border-bottom: 2px solid maroon; font-weight: normal; padding-bottom: 5px;">
+            <h1>Шифр Цезаря</h1>
+            <p style="font-size: 16px">Шифр Цезаря один из наиболее древнейших известных шифров.
+                Схема шифрования очень проста - используется сдвиг буквы алфавита на фиксированное число позиций.
+                Используемое преобразование обычно обозначают как ROTN, где N - сдвиг,
+                ROT - сокращение от слова ROTATE, в данном случае "циклический сдвиг".</p>
+            <p style="font-size: 16px">Программа шифрует, дешифрует текст; строит график, по количеству букв в введеном текте; при декодировании
+                анализирует текст и может предложить свой вариант ROT;
+                Программа преобразует только английские буквы. Все остальные символы - не меняются.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12" style="margin: 25px 0px;">
+                <form action="index" method="post" onsubmit="return false;">
+                    {% csrf_token %}
+                    <div class="col-lg-5 col-md-5">
+                        <textarea name="original_text" id="original_text" class="form-control not-resizable" placeholder="Введите текст для шифрования/дешифрования" rows="15"></textarea>
                     </div>
-                    <button type="button" ng-click="load($event)" id="encode" name="encode" class="btn btn-default">Кодировать</button>
-                    <button type="button" ng-click="load($event)" id="decode" name="decode" class="btn btn-default">Декодировать</button>
+                    <div class="col-lg-2 col-md-2">
+                        <div class="input-group">
+                            <div style="padding: 3px" class="input-group-addon">ROT</div>
+                            <input type="text" class="form-control" id="rot" name="rot">
+                        </div>
+
+                        <div style="margin: 25px 0px;">
+                            <button type="button" class="btn btn-default pull-left" data-title="Шифровать" ng-click="load($event)" name="encode">
+                                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-default pull-right" data-title="Дешифровать" ng-click="load($event)" id="decode" name="decode">
+                                <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        <div style="margin: 25px 0px;">
+                            <button type="button" ng-click="load($event)" id="encode" name="encode" class="center-block btn btn-default">Кодировать</button>
+                            <button type="button" ng-click="load($event)" id="decode" name="decode" class="center-block btn btn-default">Декодировать</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-5">
+                        {# <fieldset disabled> #}
+                            <textarea readonly="readonly" name="modified_text" id="modified_text" class="form-control not-resizable" rows="15">{$ text $}</textarea>
+                        {# </fieldset> #}
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12" style="margin: 25px 0px;">
+                <div id="myChartContainer">
+                    <canvas id="myChart" height="70px"></canvas>
                 </div>
-                <div class="col-lg-5 col-md-5 col-sm-5">
-                    {% verbatim %}
-                    <textarea name="modified_text" id="modified_text" class="form-control" rows="15" style="resize: none">{{ text }}</textarea>
-                    {% endverbatim %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 col-md-8 col-lg-push-2 col-md-push-2 center-block" style="margin: 25px 0px;">
+                <div ng-if="guess_rot && guess_rot != user_rot" style=" padding: 15px; background: #dddddd;">
+                    <span style="font-size: 16px">Возможно Вы были невнимательны и ошиблись в выборе ROT. Если у Вас не получилось дешифровать
+                        текст, то попробуйте установить <span style="font-weight:bold; font-size: large">ROT {$ guess_rot $}</span></span>
                 </div>
-                {% verbatim %}
-                <p>{{ ceasar_key }}</p>
-                {% endverbatim %}
-            </form>
+            </div>
         </div>
     </div>
 
-
-    <script type="text/javascript">
-
-    var myApp = angular.module('myApp', []);
-    myApp.controller('CeasarController',
-        function ($scope, $http){
-            $scope.text = null;
-            $scope.letters_count = null;
-            $scope.ceasar_key = null;
-
-
-             $scope.load = function ($event){
-                original_text = $('#original_text').val();
-                rot = $('#rot').val();
-                action = $event.currentTarget.name;
-
-                $http({
-                    url: 'test/',
-                    method: "POST",
-                    data: {
-                        text: original_text,
-                        rot: rot,
-                        action: action
-                    },
-                    headers: { "X-CSRFToken": getCookie("csrftoken") }
-                }).then(function successCallback(response) {
-                    this.text = 'Получилось';
-                    $scope.text = response.data.text;
-                    $scope.ceasar_key = response.data.ceasar_key;
-                }, function errorCallback(response) {
-                     alert('Ошибка!');
-                });
-            };
-        }
-    );
-
-    /*
-    $('#encode, #decode').click(function(){
-        original_text = $('#original_text').val();
-        rot = $('#rot').val();
-        action = this.name;
-        $.ajax({
-            url:{% url 'test' %},
-            type: "POST",
-            data: {
-                text: original_text,
-                rot: rot,
-                action: action
-            },
-            success: function(data){
-                alert (data);
-            },
-            error: function (xhr, textStatus, thrownError){
-                alert("error doing something");
-            }
-        });
-    });
-    */
-
-
-
-
-    function sendData() {
-        $.ajaxSetup({
-            headers: { "X-CSRFToken": getCookie("csrftoken") }
-        });
-        $.ajax({
-            url:{% url 'test' %},
-            type: "GET",
-            data: {
-                text: "a",
-                rot: "1",
-                action: "encode"
-            },
-            success: function(data, textStatus){
-
-                alert ('Получилось');
-                alert (textStatus);
-                alert (data);
-            },
-            complete: function(){},
-            error: function (xhr, textStatus, thrownError){
-                alert("error doing something");
-            }
-        });
-    }
-
-    function getCookie(c_name)
-    {
-        if (document.cookie.length > 0)
-        {
-            c_start = document.cookie.indexOf(c_name + "=");
-            if (c_start != -1)
-            {
-                c_start = c_start + c_name.length + 1;
-                c_end = document.cookie.indexOf(";", c_start);
-                if (c_end == -1) c_end = document.cookie.length;
-                return unescape(document.cookie.substring(c_start,c_end));
-            }
-        }
-        return "";
-     }
-
-    </script>
+{% load staticfiles %}
+<script src="{% static "js/angular/caesar.js" %}"></script>
 
 {% endblock %}

@@ -14,15 +14,25 @@
 
     <!-- AngularJS -->
     {% load staticfiles %}
-    <script src="{% static "js/angular.min.js" %}"></script>
+    <!--<script src="{% static "js/angular.min.js" %}"></script>-->
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>-->
+    <script src="https://code.angularjs.org/1.4.0/angular.min.js"></script>
+    <script src="{% static "js/Chart.min.js" %}"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>-->
+    <script src="{% static "js/angular-chart.min.js" %}"></script>
+    <!-- <script src="http://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>-->
+    <link rel="stylesheet" href="{% static "css/angular-chart.min.css" %}">
+    <!-- <script src="http://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.css"></script>-->
+    <link rel="stylesheet" href="{% static "css/stylesheet.css" %}">
 
-    {# <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script> #}
+
+
+
+
 </head>
 <body>
-    <div class="container">
     {% block content %}
 
     {% endblock %}
-    </div>
 </body>
 </html>

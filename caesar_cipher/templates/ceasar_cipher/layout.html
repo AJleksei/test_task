@@ -5,32 +5,20 @@
     <title>{% block title %}Title{% endblock %}</title>
 
     {% load staticfiles %}
+    <!-- jQuery -->
     <script src="{% static "js/jquery/jquery-1.12.2.min.js" %}"></script>
-    <!-- <script src="http://code.jquery.com/jquery-latest.js"></script> -->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap/bootstrap.min.css' %}">
+    <script src="{% static "js/bootstrap/bootstrap.min.js" %}"></script>
     <!-- AngularJS -->
-
     <script src="{% static "js/angular/angular.min.js" %}"></script>
+    <script src="{% static "js/angular/angular-messages.min.js" %}"></script>
     <!-- Chart -->
     <script src="{% static "js/chart/chart.min.js" %}"></script>
     <script src="{% static "js/angular/angular-chart.min.js" %}"></script>
     <link href="{% static "css/angular/angular-chart.min.css" %}" rel="stylesheet">
     <!-- My style -->
     <link rel="stylesheet" href="{% static "css/stylesheet.css" %}">
-
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>-->
-    <!-- <script src="http://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>-->
-    <!-- <script src="http://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.css"></script>-->
-    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>-->
-    <!-- <script src="https://code.angularjs.org/1.4.0/angular.min.js"></script>-->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-messages.js"></script>
-
 </head>
 <body>
     {% block content %}

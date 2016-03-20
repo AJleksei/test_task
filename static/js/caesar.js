@@ -17,6 +17,14 @@ angular.module("myApp", ['ngMessages'])
     $scope.errors = null;
 
 
+    $scope.turnText = function(){
+        var tmp = $scope.original_text;
+        $scope.original_text = $scope.modified_text;
+        $scope.modified_text = tmp;
+
+        rebuildChart();
+    };
+
     $scope.load = function ($event){
         action = $event.currentTarget.name;
         $scope.guess_rot = null;

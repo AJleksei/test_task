@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 from django.test import TestCase
+from django.core.urlresolvers import reverse
+from django.test import Client
 from views import *
 
 
@@ -58,11 +60,106 @@ class FindCesarKeyTests(TestCase):
         self.assertEqual(caesar_key, {})
 
 
+class AutomaticEncodeDecodeCaesarTests(TestCase):
+
+    def test_empty_input_parameters(self):
+        text = ''
+        rot = 0
+        result_text = automatic_encode_decode_caesar(text, rot)
+        self.assertEqual(result_text, '')
+
+    def test_input_not_encrypted_symbols(self):
+        text = 'абвгд 123(*?%'
+        rot = 0
+        result_text = automatic_encode_decode_caesar(text, rot)
+        self.assertEqual(result_text, text)
+
+    def test_input_uppercase_symbols(self):
+        text = 'aAbBвВгГ'
+        rot = 0
+        result_text = automatic_encode_decode_caesar(text, rot)
+        self.assertEqual(result_text, text)
 
 
+class FrequencyLettersTests(TestCase):
+
+    def test_empty_input_parameters(self):
+        text = ''
+        rot = 0
+        letters_count = frequency_letters(text, rot)
+        result = {chr(x): 0 for x in range(ord(START_ENGLISH_SYMBOL),
+                                              ord(END_ENGLISH_SYMBOL) + 1)}
+        self.assertEqual(letters_count, result)
+
+    def test_input_not_encrypted_symbols(self):
+        text = 'не кодируемые символы1278((?%;№'
+        rot = 0
+        letters_count = frequency_letters(text, rot)
+        result = {chr(x): 0 for x in range(ord(START_ENGLISH_SYMBOL),
+                                              ord(END_ENGLISH_SYMBOL) + 1)}
+        self.assertEqual(letters_count, result)
+
+    def test_input_uppercase_symbols(self):
+        text = 'aAAbbbBBB'
+        rot = 0
+        letters_count = frequency_letters(text, rot)
+        result = {chr(x): 0 for x in range(ord(START_ENGLISH_SYMBOL),
+                                              ord(END_ENGLISH_SYMBOL) + 1)}
+        result['a'] = 3
+        result['b'] = 6
+        self.assertEqual(letters_count, result)
 
 
+class DecodeCaesarTests(TestCase):
+
+    def test_empty_input_parameters(self):
+        text = ''
+        rot = 0
+        result_text = decode_caesar(text, rot)
+        self.assertEqual(result_text, '')
+
+    def test_input_not_encrypted_symbols(self):
+        text = 'абвгд 123(*?%'
+        rot = 0
+        result_text = decode_caesar(text, rot)
+        self.assertEqual(result_text, text)
+
+    def test_input_uppercase_symbols(self):
+        text = 'aAbBвВгГ'
+        rot = 0
+        result_text = decode_caesar(text, rot)
+        self.assertEqual(result_text, text)
+
+    def test_input_encode_text(self):
+        text = 'BcDe'
+        rot = 1
+        result_text = decode_caesar(text, rot)
+        self.assertEqual(result_text, 'AbCd')
 
 
+class EncodeCaesarTests(TestCase):
 
+    def test_empty_input_parameters(self):
+        text = ''
+        rot = 0
+        result_text = encode_caesar(text, rot)
+        self.assertEqual(result_text, '')
+
+    def test_input_not_encrypted_symbols(self):
+        text = 'абвгд 123(*?%'
+        rot = 0
+        result_text = encode_caesar(text, rot)
+        self.assertEqual(result_text, text)
+
+    def test_input_uppercase_symbols(self):
+        text = 'aAbBвВгГ'
+        rot = 0
+        result_text = encode_caesar(text, rot)
+        self.assertEqual(result_text, text)
+
+    def test_input_encode_text(self):
+        text = 'AbCd'
+        rot = 1
+        result_text = encode_caesar(text, rot)
+        self.assertEqual(result_text, 'BcDe')
 

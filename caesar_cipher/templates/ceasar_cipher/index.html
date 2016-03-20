@@ -36,6 +36,8 @@
                         </div>
 
                         <div class="margin25">
+                            <!-- Знаю, за креативность снимается -1 бал, но так намного удобней :( -->
+                            <button ng-click="turnText()" class="center-block btn btn-default glyphicon glyphicon-resize-horizontal" title="Поменять исходный и зашифрованный текст местами"></button>
                             <button type="button" ng-disabled="!codingForm.$valid" ng-click="load($event)" id="encode" name="encode" class="center-block btn btn-default">Кодировать</button>
                             <button type="button" ng-disabled="!codingForm.$valid" ng-click="load($event)" id="decode" name="decode" class="center-block btn btn-default">Декодировать</button>
                         </div>

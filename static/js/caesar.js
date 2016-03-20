@@ -1,26 +1,23 @@
 angular.module("myApp", ['ngMessages'])
-.config(function($httpProvider) {
+.config(function($httpProvider, $interpolateProvider) {
+    // Записываю в header csrftoken
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-})
-.config(function($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-})
-.config(function($interpolateProvider) {
+    // Заменяю символы, чтобы не было конфликтов с шаблонизатором джанги
     $interpolateProvider.startSymbol('{$');
     $interpolateProvider.endSymbol('$}');
 })
 .controller('CaesarController', function ($scope, $http){
-    $scope.text = null;
+    $scope.original_text = null;
+    $scope.modified_text = null;
     $scope.guess_rot = null;
-    $scope.user_rot = null;
+    $scope.rot = null;
     $scope.is_guess = false;
     $scope.errors = null;
 
 
     $scope.load = function ($event){
-        original_text = $('#original_text').val();
-        $scope.user_rot = $('#rot').val();
         action = $event.currentTarget.name;
         $scope.guess_rot = null;
 
@@ -28,29 +25,23 @@ angular.module("myApp", ['ngMessages'])
             url: 'coding_view/',
             method: "POST",
             data: {
-                text: original_text,
-                rot: $scope.user_rot,
+                text: $scope.original_text,
+                rot: $scope.rot,
                 action: action
             }
         }).then(loadSuccess, loadError);
     };
 
     var loadSuccess = function (response) {
-        $scope.text = response.data.text;
+        $scope.modified_text = response.data.text;
     };
 
     var loadError = function (response) {
         $scope.errors = response.data;
-        /*
-        $.each(response.data.errors, function(key, value){
-            alert(value);
-        });
-        */
     };
 
     function rebuildChart (){
-        original_text = $('#original_text').val();
-        chart_data = getDataChart(original_text);
+        chart_data = getDataChart($scope.original_text);
         createChart(chart_data);
     }
 
@@ -59,15 +50,14 @@ angular.module("myApp", ['ngMessages'])
             return;
         }
         $scope.is_guess = true;
-        original_text = $('#original_text').val();
-        if(original_text.length == 0){
+        if($scope.original_text.length == 0){
             $scope.is_guess = false;
             deleteChart();
             $scope.guess_rot = null;
             return;
         }
 
-        trim_text = original_text.substring(0, 5000);
+        trim_text = $scope.original_text.substring(0, 5000);
 
         $http({
             url: 'find_key_view/',
@@ -91,7 +81,6 @@ angular.module("myApp", ['ngMessages'])
         $scope.is_guess = false;
         $scope.errors = response.data;
     };
-
 });
 
 function deleteChart(){
@@ -122,7 +111,6 @@ function getDataChart(text){
     data_data = [];
     labels_data = [];
     $.each(letters_count, function(key, val){
-        //alert('key = ' + key + '\nvalue = ' + val);
         data_data.push(val);
         labels_data.push(key);
     });

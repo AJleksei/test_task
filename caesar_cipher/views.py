@@ -7,14 +7,15 @@ from django.shortcuts import render
 import json
 
 
-encode = u'encode'
-decode = u'decode'
-start_english_symbol = u'a'
-end_english_symbol = u'z'
+ENCODE = u'encode'
+DECODE = u'decode'
+START_ENGLISH_SYMBOL = u'a'
+END_ENGLISH_SYMBOL = u'z'
 
 
 # Словарь с символами которые разрешено шифровать/дешифровать
-letters = [chr(x) for x in range(ord(start_english_symbol), ord(end_english_symbol) + 1)]
+letters = [chr(x) for x in range(ord(START_ENGLISH_SYMBOL),
+                                 ord(END_ENGLISH_SYMBOL) + 1)]
 
 
 def coding_view(request):
@@ -37,9 +38,9 @@ def coding_view(request):
         return HttpResponse(json.dumps(errors), status=400,
                             content_type='application/json')
 
-    if data['action'] == decode:
+    if data['action'] == DECODE:
         data_response['text'] = decode_caesar(data['text'], data['rot'])
-    if data['action'] == encode:
+    if data['action'] == ENCODE:
         data_response['text'] = encode_caesar(data['text'], data['rot'])
     return HttpResponse(json.dumps(data_response),
                         content_type='application/json')
@@ -69,7 +70,7 @@ def find_key_view(request):
     errors = validate_fields(data)
 
     if errors:
-        return HttpResponse(json.dumps(errors), status=500,
+        return HttpResponse(json.dumps(errors), status=400,
                             content_type='application/json')
 
     data_response['guess_rot'] = find_cesar_key(data['text'])
@@ -78,6 +79,8 @@ def find_key_view(request):
 
 
 def find_cesar_key(text):
+    if not text:
+        return {}
     # Относительная частота букв в тексте, в английском языке
     letters_english = {
         'a': 8.17,
@@ -112,15 +115,15 @@ def find_cesar_key(text):
     # Сумма разностей частот букв в английском алфавите и в заданном тектсе
     min_delta = 0
     caesar_key = 0
-    for i in range(0, 26):
+    for i in range(0, len(letters)):
         # Считаем количество английских букв в тексте со смещением = i
         letters_count = frequency_letters(text, i)
         delta = 0
-        for letter, quantity_english in letters_english.iteritems():
+        for letter, quantity in letters_count.iteritems():
             # Относительная частота английских букв в заданном тексте
-            quantity_text = float(letters_count[letter] * 100) / text_len
+            quantity_text = float(quantity * 100) / text_len
             # Суммируем разности частот букв
-            delta += abs(quantity_text - quantity_english)
+            delta += abs(letters_english[letter] - quantity_text)
         if delta < min_delta or i == 0:
             min_delta = delta
             caesar_key = i
@@ -147,20 +150,22 @@ def automatic_encode_decode_caesar(text, rot):
             result_text += symbol_result
         else:
             # Записываем символ без изменений
-            result_text += symbol
+            result_text += symbol.upper() if is_upper else symbol
     return result_text
 
 
 def frequency_letters(text, rot):
     # Количество английских букв в заданном тексте
-    letters_count = {chr(x): 0 for x in range(ord(start_english_symbol), ord(end_english_symbol) + 1)}
+    letters_count = {chr(x): 0 for x in range(ord(START_ENGLISH_SYMBOL),
+                                              ord(END_ENGLISH_SYMBOL) + 1)}
 
     len_letters = len(letters)
     for symbol in text:
         symbol = symbol.lower()
         if symbol in letters:
             # Дешифруем символ
-            symbol_index = ((letters.index(symbol) - rot + len_letters) % len_letters)
+            symbol_index = ((letters.index(symbol) - rot + len_letters) %
+                            len_letters)
             decode_symbol = letters[symbol_index]
             letters_count[decode_symbol] += 1
     return letters_count

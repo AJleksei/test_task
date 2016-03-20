@@ -15,7 +15,7 @@ angular.module("myApp", ['ngMessages'])
     $scope.guess_rot = null;
     $scope.user_rot = null;
     $scope.is_guess = false;
-
+    $scope.errors = null;
 
 
     $scope.load = function ($event){
@@ -40,6 +40,7 @@ angular.module("myApp", ['ngMessages'])
     };
 
     var loadError = function (response) {
+        $scope.errors = response.data;
         /*
         $.each(response.data.errors, function(key, value){
             alert(value);
@@ -88,6 +89,7 @@ angular.module("myApp", ['ngMessages'])
 
     var findKeyError = function (response) {
         $scope.is_guess = false;
+        $scope.errors = response.data;
     };
 
 });

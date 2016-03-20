@@ -34,8 +34,7 @@ def coding_view(request):
             errors['rot'] = u'ROT должен быть числом'
 
     if errors:
-        data_response = {'errors': errors}
-        return HttpResponse(json.dumps(data_response), status=400,
+        return HttpResponse(json.dumps(errors), status=400,
                             content_type='application/json')
 
     if data['action'] == decode:
@@ -70,8 +69,7 @@ def find_key_view(request):
     errors = validate_fields(data)
 
     if errors:
-        data_response = {'errors': errors}
-        return HttpResponse(json.dumps(data_response), status=500,
+        return HttpResponse(json.dumps(errors), status=500,
                             content_type='application/json')
 
     data_response['guess_rot'] = find_cesar_key(data['text'])

@@ -18,34 +18,57 @@
                 <p ng-if="errors" class="errors" ng-repeat="(key, val) in errors">
                     <span>{$ val $}</span>
                 </p>
-                <form action="index" method="post" name="codingForm" novalidate onsubmit="return false;">
+                <form action="index" method="post"
+                      name="codingForm" novalidate onsubmit="return false;">
                     {% csrf_token %}
-                    <div class="col-lg-5 col-md-5" ng-class="{ 'has-error': codingForm.original_text.$touched && codingForm.original_text.$invalid }">
-                        <textarea name="original_text" id="original_text" ng-change="find_key()" class="form-control not-resizable" placeholder="Введите текст для шифрования/дешифрования" rows="15" ng-model="original_text" required></textarea>
-                        <div class="help-block" ng-messages="codingForm.original_text.$error" ng-if="codingForm.original_text.$touched">
+                    <div class="col-lg-5 col-md-5"
+                         ng-class="{ 'has-error': codingForm.original_text.$touched && codingForm.original_text.$invalid }">
+                        <textarea name="original_text" id="original_text"
+                                  ng-change="find_key()" ng-model="original_text"
+                                  class="form-control not-resizable"
+                                  placeholder="Введите текст для шифрования/дешифрования"
+                                  rows="15" required>
+                        </textarea>
+                        <div class="help-block"
+                             ng-messages="codingForm.original_text.$error"
+                             ng-if="codingForm.original_text.$touched">
                             <p ng-message="required">Поле должно быть заполнено</p>
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-2">
-                        <div class="input-group" ng-class="{ 'has-error': codingForm.rot.$touched && codingForm.rot.$invalid }">
+                        <div class="input-group"
+                             ng-class="{ 'has-error': codingForm.rot.$touched && codingForm.rot.$invalid }">
                             <div class="input-group-addon rot-label">ROT</div>
-                            <input type="number" class="form-control" id="rot" name="rot" ng-model="rot" required>
+                            <input type="number" class="form-control"
+                                   id="rot" name="rot" ng-model="rot" required>
                         </div>
-                        <div class="help-block" ng-messages="codingForm.rot.$error" ng-if="codingForm.rot.$touched || codingForm.$submitted">
+                        <div class="help-block"
+                             ng-messages="codingForm.rot.$error"
+                             ng-if="codingForm.rot.$touched || codingForm.$submitted">
                             <p ng-message="required">Поле должно быть заполнено</p>
                         </div>
 
                         <div class="margin25">
                             <!-- Знаю, за креативность снимается -1 бал, но так намного удобней :( -->
-                            <button ng-click="turnText()" class="center-block btn btn-default glyphicon glyphicon-resize-horizontal" title="Поменять исходный и зашифрованный текст местами"></button>
-                            <button type="button" ng-disabled="!codingForm.$valid" ng-click="load($event)" id="encode" name="encode" class="center-block btn btn-default">Кодировать</button>
-                            <button type="button" ng-disabled="!codingForm.$valid" ng-click="load($event)" id="decode" name="decode" class="center-block btn btn-default">Декодировать</button>
+                            <button ng-click="turnText()"
+                                    class="center-block btn btn-default glyphicon glyphicon-resize-horizontal"
+                                    title="Поменять исходный и зашифрованный текст местами"></button>
+                            <button type="button" ng-disabled="!codingForm.$valid"
+                                    ng-click="load($event)"
+                                    id="encode" name="encode"
+                                    class="center-block btn btn-default">Кодировать</button>
+                            <button type="button" ng-disabled="!codingForm.$valid"
+                                    ng-click="load($event)" id="decode" name="decode"
+                                    class="center-block btn btn-default">Декодировать</button>
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-5">
-                        {# <fieldset disabled> #}
-                            <textarea readonly="readonly" name="modified_text" ng-model="modified_text" id="modified_text" class="form-control not-resizable" rows="15"></textarea>
-                        {# </fieldset> #}
+                        <textarea readonly="readonly" name="modified_text"
+                                  ng-model="modified_text"
+                                  id="modified_text"
+                                  class="form-control not-resizable"
+                                  rows="15">
+                        </textarea>
                     </div>
 
 

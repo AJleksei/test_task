@@ -5,16 +5,16 @@
 {% block content %}
     <div class="container" ng-controller="CaesarController">
 
-        <div style="border-bottom: 2px solid maroon; font-weight: normal; padding-bottom: 5px;">
+        <div class="line-header">
             <h1>Шифр Цезаря</h1>
-            <p style="font-size: 16px">Схема шифрования очень проста - используется сдвиг буквы алфавита на фиксированное число позиций.
+            <p>Схема шифрования очень проста - используется сдвиг буквы алфавита на фиксированное число позиций.
                 Используемое преобразование обычно обозначают как ROTN, где N - сдвиг,
                 ROT - сокращение от слова ROTATE, в данном случае "циклический сдвиг".</p>
-            <p style="font-size: 16px">Преобразуются только английские буквы. Все остальные символы - не меняются.</p>
+            <p>Преобразуются только английские буквы. Все остальные символы - не меняются.</p>
         </div>
 
         <div class="row">
-            <div class="col-lg-12 col-md-12" style="margin: 25px 0px;">
+            <div class="col-lg-12 col-md-12 margin25">
                 <form action="index" method="post" name="codingForm" onsubmit="return false;">
                     {% csrf_token %}
                     <div class="col-lg-5 col-md-5" ng-class="{ 'has-error': codingForm.original_text.$touched && codingForm.original_text.$invalid }">
@@ -25,22 +25,14 @@
                     </div>
                     <div class="col-lg-2 col-md-2">
                         <div class="input-group" ng-class="{ 'has-error': codingForm.rot.$touched && codingForm.rot.$invalid }">
-                            <div style="padding: 3px" class="input-group-addon">ROT</div>
+                            <div class="input-group-addon rot-label">ROT</div>
                             <input type="number" class="form-control" id="rot" name="rot" ng-model="main.rot" required>
                         </div>
                         <div class="help-block" ng-messages="codingForm.rot.$error" ng-if="codingForm.rot.$touched">
                             <p ng-message="required">Поле должно быть заполнено</p>
                         </div>
 
-                        <div style="margin: 25px 0px;">
-                            <button type="button" class="btn btn-default pull-left" data-title="Шифровать" ng-click="load($event)" name="encode">
-                                <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-                            </button>
-                            <button type="button" class="btn btn-default pull-right" data-title="Дешифровать" ng-click="load($event)" id="decode" name="decode">
-                                <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
-                            </button>
-                        </div>
-                        <div style="margin: 25px 0px;">
+                        <div class="margin25">
                             <button type="button" ng-click="load($event)" id="encode" name="encode" class="center-block btn btn-default">Кодировать</button>
                             <button type="button" ng-click="load($event)" id="decode" name="decode" class="center-block btn btn-default">Декодировать</button>
                         </div>
@@ -57,7 +49,7 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-12 col-md-12" style="margin: 25px 0px;">
+            <div class="col-lg-12 col-md-12 margin25">
                 <div id="myChartContainer">
                     <canvas id="myChart" height="70px"></canvas>
                 </div>
@@ -65,10 +57,10 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-8 col-md-8 col-lg-push-2 col-md-push-2 center-block" style="margin: 25px 0px;">
-                <div ng-if="guess_rot" style=" padding: 15px; background: #dddddd;">
-                    <span style="font-size: 16px">Возможно Вы были невнимательны и ошиблись в выборе ROT. Если у Вас не получилось дешифровать
-                        текст, то попробуйте установить <span style="font-weight:bold; font-size: large">ROT {$ guess_rot $}</span></span>
+            <div class="col-lg-8 col-md-8 col-lg-push-2 col-md-push-2 center-block margin25">
+                <div ng-if="guess_rot" class="my-tooltip">
+                    <span>Возможно Вы были невнимательны и ошиблись в выборе ROT. Если у Вас не получилось дешифровать
+                        текст, то попробуйте установить <span>ROT {$ guess_rot $}</span></span>
                 </div>
             </div>
         </div>

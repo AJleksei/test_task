@@ -1,3 +1,39 @@
 .not-resizable {
-  resize: none;
+    resize: none;
+}
+
+.margin25 {
+    margin: 25px 0;
+}
+
+.margin25 > button {
+    margin-bottom: 25px;
+}
+
+.rot-label {
+    padding: 3px;
+}
+
+.line-header {
+    border-bottom: 2px solid maroon;
+    font-weight: normal;
+    padding-bottom: 5px;
+}
+
+.line-header > p {
+    font-size: 16px;
+}
+
+.my-tooltip {
+    padding: 15px;
+    background: #dddddd;
+}
+
+.my-tooltip > span {
+    font-size: 16px;
+}
+
+.my-tooltip > span > span {
+    font-weight: bold;
+    font-size: large;
 }

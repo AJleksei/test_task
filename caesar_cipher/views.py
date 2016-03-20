@@ -20,46 +20,41 @@ letters = [chr(x) for x in range(ord(start_english_symbol), ord(end_english_symb
 def coding_view(request):
     data = {}
     data_response = {}
-    errors = {}
-    if request.is_ajax():
-        data_json = json.loads(request.body)
-        data['text'] = data_json.get('text', None)
-        data['rot'] = data_json.get('rot', None)
-        data['action'] = data_json.get('action', None)
+    data_json = json.loads(request.body)
+    data['text'] = data_json.get('text', None)
+    data['rot'] = data_json.get('rot', None)
+    data['action'] = data_json.get('action', None)
 
-        errors = validate(data)
+    errors = validate_fields(data)
 
-        if not errors:
-            try:
-                data['rot'] = int(data['rot'])
-            except ValueError:
-                errors['rot'] = u'ROT должен быть числом'
+    if not errors:
+        try:
+            data['rot'] = int(data['rot'])
+        except ValueError:
+            errors['rot'] = u'ROT должен быть числом'
 
-        if errors:
-            data_response = {'errors': errors}
-            return HttpResponse(json.dumps(data_response), status=500, content_type='application/json')
-
-        if data['action'] == decode:
-            data_response['text'], data_response['letters_count'] = decode_caesar(data['text'], data['rot'])
-            #data['guess_rot'] = find_cesar_key(data['text'])
-        if data['action'] == encode:
-            data_response['text'], data_response['letters_count'] = encode_caesar(data['text'], data['rot'])
-        return HttpResponse(json.dumps(data_response), content_type='application/json')
-    else:
-        errors['headers'] = 'В Headers отсутствует параметр HTTP_X_REQUESTED_WITH: XMLHttpRequest'
+    if errors:
         data_response = {'errors': errors}
-        return HttpResponse(json.dumps(data_response), status=500, content_type='application/json')
+        return HttpResponse(json.dumps(data_response), status=400,
+                            content_type='application/json')
+
+    if data['action'] == decode:
+        data_response['text'] = decode_caesar(data['text'], data['rot'])
+    if data['action'] == encode:
+        data_response['text'] = encode_caesar(data['text'], data['rot'])
+    return HttpResponse(json.dumps(data_response),
+                        content_type='application/json')
 
 
-def validate(data):
+def validate_fields(data):
     errors = {}
-    validate_fields = {
+    fields = {
         'text': u'Введите текст',
         'rot': u'ROT не заполнено',
         'action': u'Выберите действие',
     }
 
-    for field, error in validate_fields.iteritems():
+    for field, error in fields.iteritems():
         if data.__contains__(field):
             if not data[field]:
                 errors[field] = error
@@ -69,27 +64,22 @@ def validate(data):
 def find_key_view(request):
     data = {}
     data_response = {}
-    errors = {}
-    if request.is_ajax():
-        data_json = json.loads(request.body)
-        data['text'] = data_json.get('text', None)
+    data_json = json.loads(request.body)
+    data['text'] = data_json.get('text', None)
 
-        errors = validate(data)
+    errors = validate_fields(data)
 
-        if errors:
-            data_response = {'errors': errors}
-            return HttpResponse(json.dumps(data_response), status=500, content_type='application/json')
-
-        data_response['guess_rot'] = find_cesar_key(data['text'])
-        return HttpResponse(json.dumps(data_response), content_type='application/json')
-    else:
-        errors['headers'] = 'В Headers отсутствует параметр HTTP_X_REQUESTED_WITH: XMLHttpRequest'
+    if errors:
         data_response = {'errors': errors}
-        return HttpResponse(json.dumps(data_response), status=500, content_type='application/json')
+        return HttpResponse(json.dumps(data_response), status=500,
+                            content_type='application/json')
+
+    data_response['guess_rot'] = find_cesar_key(data['text'])
+    return HttpResponse(json.dumps(data_response),
+                        content_type='application/json')
 
 
 def find_cesar_key(text):
-    text_len = len(text)
     # Относительная частота букв в тексте, в английском языке
     letters_english = {
         'a': 8.17,
@@ -120,15 +110,17 @@ def find_cesar_key(text):
         'z': 0.07
     }
 
-    # Сумма абсолютных разностей частот букв в английском алфавите и в тексте
-    # (различие между значениями переменных)
+    text_len = len(text)
+    # Сумма разностей частот букв в английском алфавите и в заданном тектсе
     min_delta = 0
     caesar_key = 0
     for i in range(0, 26):
-        letter_count = frequency_letters(text, i)
+        # Считаем количество английских букв в тексте со смещением = i
+        letters_count = frequency_letters(text, i)
         delta = 0
         for letter, quantity_english in letters_english.iteritems():
-            quantity_text = float(letter_count[letter] * 100)/text_len
+            # Относительная частота английских букв в заданном тексте
+            quantity_text = float(letters_count[letter] * 100) / text_len
             # Суммируем разности частот букв
             delta += abs(quantity_text - quantity_english)
         if delta < min_delta or i == 0:
@@ -143,7 +135,6 @@ def index(request):
 
 
 def automatic_encode_decode_caesar(text, rot):
-    letters_count = {chr(x): 0 for x in range(ord(start_english_symbol), ord(end_english_symbol) + 1)}
     len_letters = len(letters)
 
     result_text = ''
@@ -156,15 +147,14 @@ def automatic_encode_decode_caesar(text, rot):
             symbol_index = ((letters.index(symbol) + rot) % len_letters)
             symbol_result = letters[symbol_index].upper() if is_upper else letters[symbol_index]
             result_text += symbol_result
-            letters_count[symbol] += 1
         else:
             # Записываем символ без изменений
             result_text += symbol
-    return result_text, letters_count
+    return result_text
 
 
 def frequency_letters(text, rot):
-    # Количество английских букв в тексте
+    # Количество английских букв в заданном тексте
     letters_count = {chr(x): 0 for x in range(ord(start_english_symbol), ord(end_english_symbol) + 1)}
 
     len_letters = len(letters)

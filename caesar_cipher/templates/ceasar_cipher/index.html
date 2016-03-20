@@ -15,7 +15,7 @@
 
         <div class="row">
             <div class="col-lg-12 col-md-12 margin25">
-                <form action="index" method="post" name="codingForm" onsubmit="return false;">
+                <form action="index" method="post" name="codingForm" novalidate onsubmit="return false;">
                     {% csrf_token %}
                     <div class="col-lg-5 col-md-5" ng-class="{ 'has-error': codingForm.original_text.$touched && codingForm.original_text.$invalid }">
                         <textarea name="original_text" id="original_text" ng-change="find_key()" class="form-control not-resizable" placeholder="Введите текст для шифрования/дешифрования" rows="15" ng-model="main.original_text" required></textarea>
@@ -28,13 +28,13 @@
                             <div class="input-group-addon rot-label">ROT</div>
                             <input type="number" class="form-control" id="rot" name="rot" ng-model="main.rot" required>
                         </div>
-                        <div class="help-block" ng-messages="codingForm.rot.$error" ng-if="codingForm.rot.$touched">
+                        <div class="help-block" ng-messages="codingForm.rot.$error" ng-if="codingForm.rot.$touched || codingForm.$submitted">
                             <p ng-message="required">Поле должно быть заполнено</p>
                         </div>
 
                         <div class="margin25">
-                            <button type="button" ng-click="load($event)" id="encode" name="encode" class="center-block btn btn-default">Кодировать</button>
-                            <button type="button" ng-click="load($event)" id="decode" name="decode" class="center-block btn btn-default">Декодировать</button>
+                            <button type="button" ng-disabled="!codingForm.$valid" ng-click="load($event)" id="encode" name="encode" class="center-block btn btn-default">Кодировать</button>
+                            <button type="button" ng-disabled="!codingForm.$valid" ng-click="load($event)" id="decode" name="decode" class="center-block btn btn-default">Декодировать</button>
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-5">

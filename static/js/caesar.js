@@ -16,6 +16,8 @@ angular.module("myApp", ['ngMessages'])
     $scope.user_rot = null;
     $scope.is_guess = false;
 
+
+
     $scope.load = function ($event){
         original_text = $('#original_text').val();
         $scope.user_rot = $('#rot').val();

@@ -7,26 +7,29 @@
 
         <div style="border-bottom: 2px solid maroon; font-weight: normal; padding-bottom: 5px;">
             <h1>Шифр Цезаря</h1>
-            <p style="font-size: 16px">Шифр Цезаря один из наиболее древнейших известных шифров.
-                Схема шифрования очень проста - используется сдвиг буквы алфавита на фиксированное число позиций.
+            <p style="font-size: 16px">Схема шифрования очень проста - используется сдвиг буквы алфавита на фиксированное число позиций.
                 Используемое преобразование обычно обозначают как ROTN, где N - сдвиг,
                 ROT - сокращение от слова ROTATE, в данном случае "циклический сдвиг".</p>
-            <p style="font-size: 16px">Программа шифрует, дешифрует текст; строит график, по количеству букв в введеном текте; при декодировании
-                анализирует текст и может предложить свой вариант ROT;
-                Программа преобразует только английские буквы. Все остальные символы - не меняются.</p>
+            <p style="font-size: 16px">Преобразуются только английские буквы. Все остальные символы - не меняются.</p>
         </div>
 
         <div class="row">
             <div class="col-lg-12 col-md-12" style="margin: 25px 0px;">
-                <form action="index" method="post" onsubmit="return false;">
+                <form action="index" method="post" name="codingForm" onsubmit="return false;">
                     {% csrf_token %}
-                    <div class="col-lg-5 col-md-5">
-                        <textarea name="original_text" id="original_text" class="form-control not-resizable" placeholder="Введите текст для шифрования/дешифрования" rows="15"></textarea>
+                    <div class="col-lg-5 col-md-5" ng-class="{ 'has-error': codingForm.original_text.$touched && codingForm.original_text.$invalid }">
+                        <textarea name="original_text" id="original_text" ng-change="find_key()" class="form-control not-resizable" placeholder="Введите текст для шифрования/дешифрования" rows="15" ng-model="main.original_text" required></textarea>
+                        <div class="help-block" ng-messages="codingForm.original_text.$error" ng-if="codingForm.original_text.$touched">
+                            <p ng-message="required">Поле должно быть заполнено</p>
+                        </div>
                     </div>
                     <div class="col-lg-2 col-md-2">
-                        <div class="input-group">
+                        <div class="input-group" ng-class="{ 'has-error': codingForm.rot.$touched && codingForm.rot.$invalid }">
                             <div style="padding: 3px" class="input-group-addon">ROT</div>
-                            <input type="text" class="form-control" id="rot" name="rot">
+                            <input type="number" class="form-control" id="rot" name="rot" ng-model="main.rot" required>
+                        </div>
+                        <div class="help-block" ng-messages="codingForm.rot.$error" ng-if="codingForm.rot.$touched">
+                            <p ng-message="required">Поле должно быть заполнено</p>
                         </div>
 
                         <div style="margin: 25px 0px;">
@@ -63,15 +66,17 @@
 
         <div class="row">
             <div class="col-lg-8 col-md-8 col-lg-push-2 col-md-push-2 center-block" style="margin: 25px 0px;">
-                <div ng-if="guess_rot && guess_rot != user_rot" style=" padding: 15px; background: #dddddd;">
+                <div ng-if="guess_rot" style=" padding: 15px; background: #dddddd;">
                     <span style="font-size: 16px">Возможно Вы были невнимательны и ошиблись в выборе ROT. Если у Вас не получилось дешифровать
                         текст, то попробуйте установить <span style="font-weight:bold; font-size: large">ROT {$ guess_rot $}</span></span>
                 </div>
             </div>
         </div>
+
+
     </div>
 
 {% load staticfiles %}
-<script src="{% static "js/angular/caesar.js" %}"></script>
+<script src="{% static "js/caesar.js" %}"></script>
 
 {% endblock %}

@@ -21,7 +21,7 @@ angular.module("myApp", ['ngMessages'])
         var tmp = $scope.original_text;
         $scope.original_text = $scope.modified_text;
         $scope.modified_text = tmp;
-        $scope.is_guess = false;
+        $scope.find_key();
         rebuildChart();
     };
 

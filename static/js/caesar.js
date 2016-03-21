@@ -21,7 +21,7 @@ angular.module("myApp", ['ngMessages'])
         var tmp = $scope.original_text;
         $scope.original_text = $scope.modified_text;
         $scope.modified_text = tmp;
-
+        $scope.is_guess = false;
         rebuildChart();
     };
 
@@ -58,7 +58,7 @@ angular.module("myApp", ['ngMessages'])
             return;
         }
         $scope.is_guess = true;
-        if($scope.original_text.length == 0){
+        if($scope.original_text && $scope.original_text.length == 0){
             $scope.is_guess = false;
             deleteChart();
             $scope.guess_rot = null;
